@@ -1,19 +1,20 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
 	"github.com/pepetka/gotodo/internal/storage"
 )
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		red := color.New(color.FgRed)
+		fmt.Fprintln(os.Stderr, red.Sprint(err))
 		os.Exit(1)
 	}
 }
@@ -49,36 +50,38 @@ func run() error {
 			return addErr
 		}
 		needWrite = true
-		fmt.Println(id)
+		color.Green("added #%d", id)
 	case CommandList:
 		tasks, listErr := list(store, args)
 		if listErr != nil {
 			return listErr
 		}
-		b, _ := json.MarshalIndent(tasks, "", "  ")
-		fmt.Println(string(b))
+		if len(tasks) == 0 {
+			fmt.Println("No tasks found")
+			return nil
+		}
+		format(tasks, store.LastID)
 	case CommandDone:
 		id, doneErr := done(store, args)
 		if doneErr != nil {
 			return doneErr
 		}
 		needWrite = true
-		fmt.Println(id)
+		color.Green("done #%d", id)
 	case CommandRm:
 		id, rmErr := rm(store, args)
 		if rmErr != nil {
 			return rmErr
 		}
 		needWrite = true
-		fmt.Println(id)
+		color.Green("removed #%d", id)
 	case CommandClear:
 		tasks, clearErr := clear(store, args)
 		if clearErr != nil {
 			return clearErr
 		}
 		needWrite = true
-		b, _ := json.MarshalIndent(tasks, "", "  ")
-		fmt.Println(string(b))
+		color.Green("removed %d tasks", len(tasks))
 	}
 
 	if !needWrite {
