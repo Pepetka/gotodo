@@ -46,7 +46,10 @@ func ParseDate(due string) (*time.Time, error) {
 		return nil, nil
 	}
 	date, err := time.ParseInLocation(time.DateOnly, due, time.Local)
-	return &date, err
+	if err != nil {
+		return nil, fmt.Errorf("invalid date: %w", err)
+	}
+	return &date, nil
 }
 
 func ParseFilter(filter string) (Filter, error) {

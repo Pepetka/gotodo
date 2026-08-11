@@ -4,6 +4,7 @@ package storage
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -53,7 +54,7 @@ func LoadStore(path string) (s *Store, err error) {
 		return &Store{}, nil
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("load store %s: %w", path, err)
 	}
 	defer (func() {
 		if closeErr := file.Close(); closeErr != nil && err == nil {
@@ -69,7 +70,7 @@ func LoadStore(path string) (s *Store, err error) {
 		return &Store{}, nil
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("load store %s: %w", path, err)
 	}
 
 	return s, nil
@@ -82,6 +83,7 @@ func (s *Store) SaveStore(path string) error {
 	}
 
 	if err := writeJSON(tmp, s); err != nil {
+		_ = os.Remove(tmp)
 		return err
 	}
 
