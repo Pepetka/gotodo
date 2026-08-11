@@ -1,4 +1,4 @@
-// Package storage implements todo store
+// Package storage implements a JSON-file-based storage for tasks.
 package storage
 
 import (
@@ -49,8 +49,7 @@ func (s *Store) nextID() int {
 
 func LoadStore(path string) (s *Store, err error) {
 	file, err := os.Open(path)
-	isNoExist := errors.Is(err, os.ErrNotExist)
-	if isNoExist {
+	if errors.Is(err, os.ErrNotExist) {
 		return &Store{}, nil
 	}
 	if err != nil {
@@ -65,8 +64,7 @@ func LoadStore(path string) (s *Store, err error) {
 	decoder := json.NewDecoder(file)
 	s = &Store{}
 	err = decoder.Decode(s)
-	isEmpty := errors.Is(err, io.EOF)
-	if isEmpty {
+	if errors.Is(err, io.EOF) {
 		return &Store{}, nil
 	}
 	if err != nil {
@@ -109,16 +107,13 @@ func writeJSON(path string, s *Store) (err error) {
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(s); err != nil {
-		return err
-	}
-
-	return nil
+	return encoder.Encode(s)
 }
 
 func (s *Store) AddTask(task Task) int {
+	id := s.nextID()
 	s.Tasks = append(s.Tasks, Task{
-		ID:       s.nextID(),
+		ID:       id,
 		Text:     task.Text,
 		Priority: task.Priority,
 		Due:      task.Due,
@@ -127,7 +122,7 @@ func (s *Store) AddTask(task Task) int {
 		Updated:  time.Now(),
 	})
 
-	return s.Tasks[len(s.Tasks)-1].ID
+	return id
 }
 
 func (s *Store) DoneTask(id int) bool {

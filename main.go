@@ -77,7 +77,7 @@ func run() error {
 		color.Green("removed #%d", id)
 	case CommandClear:
 		tasks, clearErr := clear(store, args)
-		if errors.Is(clearErr, errorAborted) {
+		if errors.Is(clearErr, errAborted) {
 			return nil
 		}
 		if clearErr != nil {
@@ -90,11 +90,7 @@ func run() error {
 	if !needWrite {
 		return nil
 	}
-	err = store.SaveStore(path)
-	if err != nil {
-		return err
-	}
-	return nil
+	return store.SaveStore(path)
 }
 
 func preparePath() (string, error) {

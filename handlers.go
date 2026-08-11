@@ -13,7 +13,7 @@ import (
 	"golang.org/x/term"
 )
 
-var errorAborted = errors.New("aborted")
+var errAborted = errors.New("aborted")
 
 func add(s *storage.Store, args []string) (int, error) {
 	if len(args) == 0 {
@@ -116,8 +116,7 @@ func done(s *storage.Store, args []string) (int, error) {
 		return 0, err
 	}
 
-	ok := s.DoneTask(taskID)
-	if !ok {
+	if !s.DoneTask(taskID) {
 		return 0, errors.New("task not found")
 	}
 	return taskID, nil
@@ -136,8 +135,7 @@ func rm(s *storage.Store, args []string) (int, error) {
 		return 0, err
 	}
 
-	ok := s.RmTask(taskID)
-	if !ok {
+	if !s.RmTask(taskID) {
 		return 0, errors.New("task not found")
 	}
 	return taskID, nil
@@ -165,7 +163,7 @@ func clear(s *storage.Store, args []string) ([]storage.Task, error) {
 		return nil, errors.New("confirm required: use --yes")
 	}
 	if !requestConfirm("clear all done tasks?") {
-		return nil, errorAborted
+		return nil, errAborted
 	}
 	removed := s.RmTasks(storage.FilterByStatusFn(storage.StatusActive))
 	return removed, nil

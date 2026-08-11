@@ -10,6 +10,10 @@ import (
 	"github.com/pepetka/gotodo/internal/storage"
 )
 
+var red = color.New(color.FgRed).SprintFunc()
+var bold = color.New(color.Bold).SprintFunc()
+var faint = color.New(color.Faint).SprintFunc()
+
 func format(tasks []storage.Task, lastID int) {
 	idLen := strconv.Itoa(len(strconv.Itoa(lastID)))
 	dueLen := "3"
@@ -54,13 +58,13 @@ func format(tasks []storage.Task, lastID int) {
 
 		if !isDone {
 			if isOverdue {
-				formattedDue = color.New(color.FgRed).SprintFunc()(formattedDue)
+				formattedDue = red(formattedDue)
 			}
 			if isHighPriority {
-				formattedPriority = color.New(color.Bold).SprintFunc()(formattedPriority)
+				formattedPriority = bold(formattedPriority)
 			}
 			if isLowPriority {
-				formattedPriority = color.New(color.Faint).SprintFunc()(formattedPriority)
+				formattedPriority = faint(formattedPriority)
 			}
 		}
 
@@ -68,7 +72,7 @@ func format(tasks []storage.Task, lastID int) {
 		output := strings.Join(formattedSlice, "  ")
 
 		if isDone {
-			output = color.New(color.Faint).SprintFunc()(output)
+			output = faint(output)
 		}
 
 		fmt.Println(output)
