@@ -77,6 +77,9 @@ func run() error {
 		color.Green("removed #%d", id)
 	case CommandClear:
 		tasks, clearErr := clear(store, args)
+		if errors.Is(clearErr, errorAborted) {
+			return nil
+		}
 		if clearErr != nil {
 			return clearErr
 		}

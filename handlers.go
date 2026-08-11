@@ -13,6 +13,8 @@ import (
 	"golang.org/x/term"
 )
 
+var errorAborted = errors.New("aborted")
+
 func add(s *storage.Store, args []string) (int, error) {
 	if len(args) == 0 {
 		return 0, errors.New("missing task text")
@@ -162,8 +164,8 @@ func clear(s *storage.Store, args []string) ([]storage.Task, error) {
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
 		return nil, errors.New("confirm required: use --yes")
 	}
-	if !requestConfirm("clear all tasks?") {
-		return nil, nil
+	if !requestConfirm("clear all done tasks?") {
+		return nil, errorAborted
 	}
 	removed := s.RmTasks(storage.FilterByStatusFn(storage.StatusActive))
 	return removed, nil
