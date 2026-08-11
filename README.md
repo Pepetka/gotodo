@@ -7,7 +7,7 @@ in a single JSON file — no database, no daemon, no accounts.
 
 - Add tasks with priority (`high`, `medium`, `low`) and an optional due date
 - List tasks with status, priority, and due-date filters
-- Mark tasks as done, remove them, or clear all active tasks
+- Mark tasks as done, remove them, or clear completed tasks in bulk
 - Colorized output: overdue dates in red, high priority in bold, done tasks dimmed
 - Atomic saves to `~/.gotodo/tasks.json`
 
@@ -79,8 +79,9 @@ gotodo rm 3
 
 ### clear
 
-Remove all active tasks at once. Asks for confirmation interactively;
-use `--yes` to skip the prompt (required in non-interactive shells):
+Remove all completed (done) tasks at once; active tasks are kept.
+Asks for confirmation interactively; use `--yes` to skip the prompt
+(required in non-interactive shells):
 
 ```sh
 gotodo clear
